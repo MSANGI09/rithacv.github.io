@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Viewer and Downloader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            background-image: url('kl.jpg'); /* Replace with your background image URL */
+            background-size: cover;
+            background-position: center;
+        }
+        .container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 90%;
+            max-width: 1000px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .owner-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            padding-bottom: 1%;
+        }
+        iframe {
+            width: 100%;
+            height: 60vh; /* Adjust height for better mobile display */
+            border: none;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        select, button {
+            display: block;
+            margin: 10px auto;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            width: calc(100% - 24px); /* Ensure width is responsive */
+            box-sizing: border-box;
+        }
+        select {
+            background-color: #f8f9fa;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        label {
+            text-align: left;
+            
+            margin-bottom: 5px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        label[for="username"]
+        {
+            color: #28a745;
+        }
+
+        /* Login Page Decoration */
+        .login-page {
+            width: 90%;
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            text-align: center;
+            position: relative;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            color: #333;
+        }
+        .form-group input[type="password"] {
+            padding-right: 40px; /* Padding for potential future elements */
+        }
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #218838;
+        }
+
+        /* Program Page */
+        .program-page {
+            display: none;
+        }
+        .program-page.active {
+            display: block;
+        }
+        .notification {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px;
+            background-color: #28a745;
+            color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            font-size: 16px;
+            text-align: center;
+            z-index: 10;
+        }
+        .notification.show {
+            display: block;
+        }
+        .notification .tick {
+            display: inline-block;
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        img{
+            max-width: 100px;
+            max-height: auto;
+            border-radius: 65%;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div class="login-page" id="login-page">
+        <h1> MSANGIJR </h1>
+        <img src="ko.jpg">
+        <h2><b>Login Page</b></h2>
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <div class="form-group">
+            <button onclick="login()">Login</button>
+        </div>
+    </div>
+
+    <!-- Program Page -->
+    <div class="container program-page" id="program-page">
+        <h1>Ritha Msangi Vyeti PDF</h1>
+        <label><b>Chagua cheti</b></label>
+        <select id="pdfSelector" onchange="updatePDF()">
+            <option value="o_level.pdf">Secondary certificate</option>
+            <option value="a_level.pdf">Advance level certificate</option>
+            <option value="certificate.pdf">certificate of bachelor Degree in Education</option>
+            <option value="transcript.pdf">Transcript</option>
+            <!-- Add more options here -->
+        </select>
+        <iframe id="pdfViewer" src="pdf1.pdf"></iframe>
+        <button onclick="downloadPDF()">Download PDF</button>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="success-notification">
+        <span class="tick">✔</span> Login successful!
+    </div>
+
+    <script>
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === 'ritha' && password === '1995') {
+                document.getElementById('login-page').style.display = 'none';
+                document.getElementById('program-page').style.display = 'block';
+                const notification = document.getElementById('success-notification');
+                notification.classList.add('show');
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000); // Hide notification after 3 seconds
+            } else {
+                alert('Invalid username or password');
+            }
+        }
+
+        function updatePDF() {
+            const select = document.getElementById('pdfSelector');
+            const selectedPDF = select.value;
+            const viewer = document.getElementById('pdfViewer');
+            viewer.src = selectedPDF;
+        }
+
+        function downloadPDF() {
+            const select = document.getElementById('pdfSelector');
+            const selectedPDF = select.value;
+            const link = document.createElement('a');
+            link.href = selectedPDF;
+            link.download = selectedPDF;
+            link.click();
+        }
+    </script>
+</body>
+</html>
